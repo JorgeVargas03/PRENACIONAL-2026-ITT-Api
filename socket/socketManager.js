@@ -1,7 +1,7 @@
 const { participants } = require("../store/participantStore");
 
 module.exports = (io) => {
-    io.on("conneection", (socket) => {
+    io.on("connection", (socket) => {
         console.log("cliente conectado: ", socket.id);
 
         /* ADMIN */
@@ -11,7 +11,7 @@ module.exports = (io) => {
 
             console.log("Admin conectado");
 
-            socket.emit("participants:list", participants);
+            socket.emit("participant:list", participants);
         });
 
         /* PARTICIPANTES */
@@ -19,6 +19,15 @@ module.exports = (io) => {
             socket.join("participants")
 
             console.log("Participante conectado");
+
+            if (data && data.id) {
+                participants[data.id] = {
+                    ...participants[data.id],
+                    ...data,
+                    socketId: socket.id,
+                    updatedAt: new Date()
+                };
+            }
         });
 
         /*  ACTUALIZAR UBICACIÓN */
@@ -26,7 +35,7 @@ module.exports = (io) => {
             participants[data.id] = {
                 ...data,
                 socketId: socket.id,
-                updateAt: new Date()
+                updatedAt: new Date()
             };
 
             console.log("Ubicación actualizada");
