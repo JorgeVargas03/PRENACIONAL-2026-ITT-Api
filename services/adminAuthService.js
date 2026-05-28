@@ -25,6 +25,14 @@ function setAdminCookie(res, token) {
     });
 }
 
+function clearAdminCookie(res) {
+    res.clearCookie(ADMIN_COOKIE, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: process.env.NODE_ENV === "production"
+    });
+}
+
 async function verifyCredentials(username, password) {
     if (!isEnvReady()) {
         return { ok: false, status: 500, message: "Servidor no configurado" };
@@ -49,6 +57,7 @@ function verifyToken(token) {
 module.exports = {
     ADMIN_COOKIE,
     buildAdminToken,
+    clearAdminCookie,
     setAdminCookie,
     verifyCredentials,
     verifyToken,

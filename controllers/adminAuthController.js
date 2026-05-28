@@ -1,5 +1,6 @@
 const {
     buildAdminToken,
+    clearAdminCookie,
     isEnvReady,
     setAdminCookie,
     verifyCredentials
@@ -31,4 +32,9 @@ function me(req, res) {
     return res.json({ ok: true });
 }
 
-module.exports = { login, me };
+function logout(req, res) {
+    clearAdminCookie(res);
+    return res.json({ ok: true });
+}
+
+module.exports = { login, me, logout };
