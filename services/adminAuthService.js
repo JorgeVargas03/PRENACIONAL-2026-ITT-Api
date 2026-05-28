@@ -7,6 +7,12 @@ const ADMIN_PASSWORD_HASH = process.env.ADMIN_PASSWORD_HASH || "";
 const ADMIN_JWT_SECRET = process.env.ADMIN_JWT_SECRET || "";
 const ADMIN_TOKEN_TTL = process.env.ADMIN_TOKEN_TTL || "30m";
 const ADMIN_COOKIE_TTL_MS = Number(process.env.ADMIN_COOKIE_TTL_MS || 1000 * 60 * 60 * 2);
+const ADMIN_COOKIE_SAME_SITE =
+    process.env.ADMIN_COOKIE_SAME_SITE || (process.env.NODE_ENV === "production" ? "none" : "lax");
+const ADMIN_COOKIE_SECURE =
+    process.env.ADMIN_COOKIE_SECURE != null
+        ? String(process.env.ADMIN_COOKIE_SECURE).toLowerCase() === "true"
+        : process.env.NODE_ENV === "production";
 
 function isEnvReady() {
     return Boolean(ADMIN_USER && ADMIN_PASSWORD_HASH && ADMIN_JWT_SECRET);
@@ -19,8 +25,8 @@ function buildAdminToken() {
 function setAdminCookie(res, token) {
     res.cookie(ADMIN_COOKIE, token, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production",
+        sameSite: ADMIN_COOKIE_SAME_SITE,
+        secure: ADMIN_COOKIE_SECURE,
         maxAge: ADMIN_COOKIE_TTL_MS
     });
 }
@@ -28,8 +34,8 @@ function setAdminCookie(res, token) {
 function clearAdminCookie(res) {
     res.clearCookie(ADMIN_COOKIE, {
         httpOnly: true,
-        sameSite: "lax",
-        secure: process.env.NODE_ENV === "production"
+        sameSite: ADMIN_COOKIE_SAME_SITE,
+        secure: ADMIN_COOKIE_SECURE
     });
 }
 
